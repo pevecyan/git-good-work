@@ -1,0 +1,22 @@
+{
+  "name": "git-good-work",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pevecyan/git-good-work.git"
+  },
+  "author": "Žan Pevec",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pevecyan/git-good-work/issues"
+  },
+  "homepage": "https://github.com/pevecyan/git-good-work#readme",
+  "dependencies": {
+    "cli": "^1.0.1"
+  }
+}
