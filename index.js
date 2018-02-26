@@ -1,15 +1,30 @@
 const cli = require('cli');
 const {exec} = require('child_process');
 
-let options = cli.parse();
-
+let options = cli.parse({
+    author: ['a', 'commits author', 'string', ''],
+    month: ['m', 'month of which you want commits (current year if year not specified), empty for all', 'number'],
+    year: ['y', 'year of which you want commits','number', new Date().getFullYear()],
+    group: ['g', 'Group by (days=d, author=a)', 'string', 'd']
+});
 let cwd = process.cwd();
 
 
 exec('git log', (err, stdout, stderr)=>{
     if(stderr)
         console.log(stderr);
-    handleOutput(stdout);
+    console.log(options);
+    let commits = handleOutput(stdout);
+    //filter authors
+    commits = commits.filter(c=>c.author.indexOf(options.author ? options.author : '')>-1);
+    //filter months
+    commits = commits.filter(c=> 
+        (!options.month || (new Date(c.date).getMonth() + 1) === options.month) &&
+        (new Date(c.date).getFullYear() === options.year)
+    );
+    commits = groupBy(commits);
+    console.log(commits);
+    generateCsv(commits);
 })
 
 
@@ -41,5 +56,36 @@ function handleOutput(output){
             commits.push(commit);
         }
     }
-    console.log(commits);
+    return commits;
+
+}
+
+function groupBy(commits){
+    let output = [];
+    switch(options.group){
+        case 'd':{
+            let days = {};
+            commits.forEach(commit=>{
+                let date = new Date(commit.date);
+                let value = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+                if(!days[value]){
+                    days[value] = {
+                        days: []
+                    }
+                }
+                days[value].days.push(commit);
+            })
+            return days;
+        }
+        case 'a':{
+            
+            return output;
+        }
+
+    }
+}
+
+function generateCsv(){
+    let data = 'date, work time, hours, work';
+
 }
