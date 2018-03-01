@@ -1,9 +1,10 @@
 const cli = require('cli');
 const {exec} = require('child_process');
+const fs = require('fs');
 
 let options = cli.parse({
     author: ['a', 'commits author', 'string', ''],
-    month: ['m', 'month of which you want commits (current year if year not specified), empty for all', 'number'],
+    month: ['m', 'month of which you want commits (current year if year not specified), empty for all', 'number', new Date().getMonth()],
     year: ['y', 'year of which you want commits','number', new Date().getFullYear()],
     group: ['g', 'Group by (days=d, author=a)', 'string', 'd']
 });
@@ -85,7 +86,25 @@ function groupBy(commits){
     }
 }
 
-function generateCsv(){
+function generateCsv(commits){
     let data = 'date, work time, hours, work';
+    let start = new Date(options.year, options.month-1, 1);
+    while(start.getMonth() == (options.month-1)){
+        let day = `${start.getFullYear()}-${start.getMonth()+1}-${start.getDate()}`;
+        //console.log(day);
+        if(start.getDay() == 6 || start.getDay() == 7){
 
+        }else{
+            let work = ''
+        if(commits[day]){
+            commits[day].days.forEach(commit=>{
+                    work+=`${commit.message}, `;
+                })
+                
+            }
+            data += `\n${day}, 9:00-17:00, 8, "${work}"`;
+        }
+        start = new Date(start.setDate(start.getDate()+1));
+    }
+    fs.writeFile('./job'+options.year+'-'+options.month+'.csv', data);
 }
